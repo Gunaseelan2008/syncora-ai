@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Syncora AI – Prototype</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff;--surface:#edf4f6;--card:#fff;--ink:#1b2433;--muted:#55637a;--navy:#14305a;--teal:#0e7c86;--saf:#f28c28;--green:#3a9d5d;--line:#d5e2e8;--map:#f4f9fa;--land:#dfeef1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f1a2b;--surface:#162338;--card:#1b2b44;--ink:#e8eef6;--muted:#9fb0c7;--navy:#9cc3f0;--teal:#35b6c1;--line:#2a3d5c;--map:#13213a;--land:#1a2f4d}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f1a2b;--surface:#162338;--card:#1b2b44;--ink:#e8eef6;--muted:#9fb0c7;--navy:#9cc3f0;--teal:#35b6c1;--line:#2a3d5c;--map:#13213a;--land:#1a2f4d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Calibri,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+h1{margin:0;font:700 26px Cambria,Georgia,serif;color:var(--navy)}
+h1 small{display:block;font:400 13px Calibri,Arial,sans-serif;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font:700 24px Cambria,Georgia,serif;color:var(--teal)}
+.stat span{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:20px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:12px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.panel{background:var(--surface);border-radius:12px;padding:12px}
+.panel h2{margin:0 0 8px;font:700 16px Cambria,Georgia,serif;color:var(--navy)}
+.item{background:var(--card);border:2px solid transparent;border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.item.sel{border-color:var(--teal)}
+.item b{display:block}.item small{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--saf);color:#1b2433;margin-left:6px}
+.tag.ok{background:var(--green);color:#fff}
+.map{width:100%;height:auto;background:var(--map);border-radius:10px;display:block}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin:6px 2px 10px;flex-wrap:wrap}
+.match{background:var(--card);border-radius:10px;padding:10px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.score{font:700 22px Cambria,Georgia,serif;color:var(--teal)}
+.bars{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:12px;color:var(--muted);margin:6px 0}
+.bar{height:8px;background:var(--line);border-radius:4px;align-self:center;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal)}
+.why{font-size:13px;margin:4px 0 8px}
+button.go{background:var(--saf);color:#1b2433;border:0;border-radius:8px;padding:8px 14px;font:700 14px inherit;cursor:pointer}
+button.go:disabled{opacity:.5;cursor:default}
+form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:640px}
+form label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:3px}
+form .full{grid-column:1/-1}
+input,select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Syncora AI<small>One community. Shared resources. Unlimited possibilities. · RTC NEXUS · prototype with demo data</small></h1>
+</header>
+<div class="stats">
+<div class="stat"><b id="s1">0</b><span>Matches approved</span></div>
+<div class="stat"><b id="s2">0</b><span>Equipment items reused</span></div>
+<div class="stat"><b id="s3">0</b><span>Volunteer hours planned</span></div>
+<div class="stat"><b id="s4">0</b><span>Communities served</span></div>
+</div>
+<div class="tabs" role="tablist">
+<button class="tab" role="tab" aria-selected="true" data-t="match">Match and map</button>
+<button class="tab" role="tab" aria-selected="false" data-t="add">Add a listing</button>
+</div>
+
+<div id="v-match" class="grid">
+<div class="panel"><h2>Community needs</h2><div id="needs"></div></div>
+<div>
+<div class="panel"><h2>Pilot district map (schematic)</h2>
+<svg id="map" class="map" viewBox="0 0 100 70" role="img" aria-label="Map of needs and resources"></svg>
+<div class="legend"><span>● Need (school or community)</span><span>■ Offer (equipment or volunteer)</span><span>— Selected match</span></div>
+<h2>Recommended matches</h2><div id="matches"></div></div>
+</div>
+</div>
+
+<div id="v-add" class="panel hide">
+<h2>Register a need or an offer</h2>
+<form id="f">
+<label>I want to<select id="kind"><option value="need">Request help (need)</option><option value="offer">Give help (offer)</option></select></label>
+<label>Organization or person<input id="who" required placeholder="e.g. Govt Primary School"></label>
+<label>What<select id="item"></select></label>
+<label>Quantity<input id="qty" type="number" min="1" value="1"></label>
+<label>Location<select id="place"></select></label>
+<label><span id="lbl2">Urgency (1–5)</span><input id="lvl" type="number" min="1" max="5" value="3"></label>
+<div class="full"><button class="go" type="submit">Add listing</button></div>
+</form>
+<p class="note" id="msg"></p>
+<p class="note">Listings are held in this page only. In the full product they go through verification before they can be matched.</p>
+</div>
+<p class="note">Match score = 40% need fit + 25% proximity + 20% urgency and impact + 15% availability and condition. AI recommends, a person approves.</p>
+</div>
+
+<script>
+const P={"Vellaiyur":[18,20],"Nallur":[45,14],"Pudhur":[78,22],"Marudhur":[30,48],"Aruvi Nagar":[62,45],"Kilnattu":[85,56],"Semmedu":[12,60],"Thanipalli":[50,62]};
+const ITEMS=["Laptops","Tablets","Projector","Mentor: Coding","Mentor: Science"];
+let needs=[
+{id:"n1",who:"Govt High School, Vellaiyur",item:"Laptops",qty:15,place:"Vellaiyur",lvl:5},
+{id:"n2",who:"Panchayat School, Pudhur",item:"Projector",qty:2,place:"Pudhur",lvl:3},
+{id:"n3",who:"Middle School, Kilnattu",item:"Mentor: Coding",qty:1,place:"Kilnattu",lvl:4},
+{id:"n4",who:"Village Library, Semmedu",item:"Tablets",qty:10,place:"Semmedu",lvl:4}];
+let offers=[
+{id:"r1",who:"TechNova Pvt Ltd (CSR)",item:"Laptops",qty:20,place:"Aruvi Nagar",lvl:.9},
+{id:"r2",who:"Sunrise Trust",item:"Projector",qty:3,place:"Nallur",lvl:.8},
+{id:"r3",who:"Priya S. (volunteer)",item:"Mentor: Coding",qty:1,place:"Marudhur",lvl:.8},
+{id:"r4",who:"Arun K. (volunteer)",item:"Mentor: Science",qty:1,place:"Thanipalli",lvl:.9},
+{id:"r5",who:"BlueLeaf Corp",item:"Tablets",qty:12,place:"Thanipalli",lvl:.7},
+{id:"r6",who:"CityBank CSR",item:"Laptops",qty:8,place:"Nallur",lvl:.75}];
+let sel="n1",done={},st={m:0,e:0,h:0};
+const $=id=>document.getElementById(id);
+const isM=i=>i.startsWith("Mentor");
+const km=(a,b)=>Math.round(Math.hypot(P[a][0]-P[b][0],P[a][1]-P[b][1])*0.55);
+function fit(n,o){if(n.item===o.item)return 1;if(isM(n.item)&&isM(o.item))return .4;if(!isM(n.item)&&!isM(o.item)&&["Laptops","Tablets"].includes(n.item)&&["Laptops","Tablets"].includes(o.item))return .5;return 0}
+function score(n,o){const f=fit(n,o);if(!f)return null;const d=km(n.place,o.place),prox=Math.max(0,1-d/70),urg=n.lvl/5,av=o.lvl*Math.min(1,o.qty/n.qty);
+return{f,prox,urg,av,d,total:.4*f+.25*prox+.2*urg+.15*av}}
+function ranked(n){return offers.filter(o=>o.qty>0).map(o=>({o,s:score(n,o)})).filter(x=>x.s).sort((a,b)=>b.s.total-a.s.total).slice(0,3)}
+function why(n,o,s){const bits=[];bits.push(s.f===1?"Exact item match":"Related item (partial fit)");bits.push(s.d+" km away");bits.push(n.lvl>=4?"high urgency":"moderate urgency");
+if(!isM(n.item))bits.push(o.qty>=n.qty?"enough stock":"covers part of the need");return bits.join(" · ")}
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function drawNeeds(){const box=$("needs");box.innerHTML="";needs.forEach(n=>{
+const d=el("div","item"+(n.id===sel?" sel":""),`<b>${esc(n.who)}${done[n.id]?'<span class="tag ok">Matched</span>':'<span class="tag">Urgency '+n.lvl+'</span>'}</b><small>${esc(n.item)} × ${n.qty} · ${esc(n.place)}</small>`);
+d.tabIndex=0;d.onclick=()=>{sel=n.id;render()};d.onkeydown=e=>{if(e.key==="Enter"){sel=n.id;render()}};box.appendChild(d)})}
+function drawMap(){const m=$("map");let h='<path d="M4 12 Q20 2 50 6 T96 14 Q99 40 94 62 Q60 68 30 66 T4 52Z" fill="var(--land)"/>';
+const n=needs.find(x=>x.id===sel),top=n&&!done[n.id]?ranked(n)[0]:null;
+if(top){const a=P[n.place],b=P[top.o.place];h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--saf)" stroke-width="1.2" stroke-dasharray="2 1.5"/>`}
+offers.filter(o=>o.qty>0).forEach(o=>{const p=P[o.place];h+=`<rect x="${p[0]-1.8}" y="${p[1]-1.8}" width="3.6" height="3.6" fill="var(--teal)"/>`});
+needs.forEach(x=>{const p=P[x.place];const c=done[x.id]?"var(--green)":"var(--saf)";h+=`<circle cx="${p[0]}" cy="${p[1]}" r="${x.id===sel?3.4:2.4}" fill="${c}" stroke="${x.id===sel?"var(--navy)":"none"}" stroke-width=".8"/>`});
+Object.keys(P).forEach(k=>{h+=`<text x="${P[k][0]}" y="${P[k][1]+6}" font-size="2.8" text-anchor="middle" fill="var(--muted)">${k}</text>`});
+m.innerHTML=h}
+function drawMatches(){const box=$("matches");box.innerHTML="";const n=needs.find(x=>x.id===sel);if(!n)return;
+if(done[n.id]){box.innerHTML='<p class="note">This need is matched and approved. Select another need.</p>';return}
+const r=ranked(n);if(!r.length){box.innerHTML='<p class="note">No available offers fit this need yet. Add an offer in the next tab.</p>';return}
+r.forEach(({o,s},i)=>{const bar=(l,v)=>`<span>${l}</span><div class="bar"><i style="width:${Math.round(v*100)}%"></i></div>`;
+const c=el("div","match",`<div class="row"><div><b>${i===0?"Best match: ":""}${esc(o.who)}</b><br><small>${esc(o.item)} × ${o.qty} · ${esc(o.place)}</small></div><div class="score">${Math.round(s.total*100)}%</div></div>
+<div class="bars">${bar("Need fit",s.f)}${bar("Proximity",s.prox)}${bar("Urgency",s.urg)}${bar("Availability",s.av)}</div>
+<div class="why">${why(n,o,s)}</div>`);
+const b=el("button","go","Approve match");b.onclick=()=>approve(n,o);c.appendChild(b);box.appendChild(c)})}
+function approve(n,o){const used=isM(n.item)?1:Math.min(n.qty,o.qty);o.qty-=used;done[n.id]=o.id;st.m++;if(isM(n.item))st.h+=20;else st.e+=used;render()}
+function stats(){$("s1").textContent=st.m;$("s2").textContent=st.e;$("s3").textContent=st.h;$("s4").textContent=Object.keys(done).length}
+function render(){drawNeeds();drawMap();drawMatches();stats()}
+// tabs
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+$("v-match").classList.toggle("hide",t.dataset.t!=="match");$("v-add").classList.toggle("hide",t.dataset.t!=="add")});
+// form
+$("item").innerHTML=ITEMS.map(i=>`<option>${i}</option>`).join("");
+$("place").innerHTML=Object.keys(P).map(k=>`<option>${k}</option>`).join("");
+$("kind").onchange=()=>{const n=$("kind").value==="need";$("lbl2").textContent=n?"Urgency (1–5)":"Condition (1–5)"};
+$("f").onsubmit=e=>{e.preventDefault();const k=$("kind").value,q=Math.max(1,+$("qty").value||1),l=Math.min(5,Math.max(1,+$("lvl").value||3));
+const base={who:$("who").value.trim(),item:$("item").value,qty:q,place:$("place").value};
+if(k==="need"){needs.push({...base,id:"n"+Date.now(),lvl:l});sel=needs[needs.length-1].id}else{offers.push({...base,id:"r"+Date.now(),lvl:l/5})}
+$("who").value="";$("msg").textContent="Listing added. Open the Match and map tab to see updated recommendations.";render()};
+render();
+</script>
+</body>
+</html>
